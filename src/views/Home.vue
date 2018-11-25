@@ -20,14 +20,19 @@
       SupplierId: <input v-model="newProductSupplierId" type="text">
       <button v-on:click="createProduct()" class="btn btn-primary">Create</button>
 <!--  -->
+
+      <div>
+        <button v-on:click="sortAttribute = 'name'" class="btn btn-secondary">Sort by name</button>
+        <button v-on:click="sortAttribute = 'price'" class="btn btn-secondary">Sort by price</button>
+      </div>
       <h1>Search products</h1>
       <input type="text" v-model="searchFilter" list="names">
       <datalist id="names">
         <option v-for="product in products">{{ product.name }}</option>
       </datalist>
       <div class="row">
-        <div v-for="product in filterBy(products, searchFilter, 'name', 'id')" class="col-md-4 mb-2">
-          <div class="card">
+        <div v-for="product in orderBy(filterBy(products, searchFilter, 'name', 'price'), sortAttribute)" class="col-md-4 mb-2">
+            <div class="card">
             <img class="card-img-top" v-bind:src="product.images[0]" alt="Card image cap">
             <div class="card-body">
               <h5 class="card-title">{{ product.name }}</h5>
@@ -60,6 +65,7 @@ export default {
       newProductDescription: "",
       newProductSupplierId: "",
       searchFilter: "",
+      sortAttribute: "name",      
       errors: []
     };
   },
