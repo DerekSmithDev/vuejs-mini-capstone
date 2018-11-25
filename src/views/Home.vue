@@ -20,18 +20,17 @@
       SupplierId: <input v-model="newProductSupplierId" type="text">
       <button v-on:click="createProduct()" class="btn btn-primary">Create</button>
 <!--  -->
-
       <div>
-        <button v-on:click="sortAttribute = 'name'" class="btn btn-secondary">Sort by name</button>
-        <button v-on:click="sortAttribute = 'price'" class="btn btn-secondary">Sort by price</button>
+        <button v-on:click="setSortAttribute('name')" class="btn btn-secondary">Sort by name</button>
+        <button v-on:click="setSortAttribute('price')" class="btn btn-secondary">Sort by price</button>
       </div>
       <h1>Search products</h1>
       <input type="text" v-model="searchFilter" list="names">
       <datalist id="names">
         <option v-for="product in products">{{ product.name }}</option>
       </datalist>
-      <div class="row">
-        <div v-for="product in orderBy(filterBy(products, searchFilter, 'name', 'price'), sortAttribute)" class="col-md-4 mb-2">
+      <div class="row" is="transition-group" name="slide-right">
+        <div v-for="product in orderBy(filterBy(products, searchFilter, 'name', 'price'), sortAttribute, sortOrder)" class="col-md-4 mb-2" v-bind:key="product.id">
             <div class="card">
             <img class="card-img-top" v-bind:src="product.images[0]" alt="Card image cap">
             <div class="card-body">
@@ -50,6 +49,37 @@
 
 
 <style>
+  /* Vue.js fade */
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity .5s
+  }
+  .fade-enter, .fade-leave-to {
+    opacity: 0
+  }
+
+  /* Vue.js slide-right */
+  .slide-right-enter-active {
+    transition: all .3s ease;
+  }
+  .slide-right-leave-active {
+    transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+  }
+  .slide-right-enter, .slide-right-leave-to {
+    transform: translateX(10px);
+    opacity: 0;
+  }
+
+  /* Vue.js slide-left */
+  .slide-left-enter-active {
+    transition: all .3s ease;
+  }
+  .slide-left-leave-active {
+    transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+  }
+  .slide-left-enter, .slide-left-leave-to {
+    transform: translateX(-10px);
+    opacity: 0;
+  }
 </style>
 
 <script>
@@ -65,7 +95,8 @@ export default {
       newProductDescription: "",
       newProductSupplierId: "",
       searchFilter: "",
-      sortAttribute: "name",      
+      sortAttribute: "name",
+      sortOrder: 1,
       errors: []
     };
   },
@@ -78,6 +109,17 @@ export default {
     );
   },
   methods: {
+    setCurrentProduct: function(inputProduct) {
+      this.setCurrentProduct = inputProduct;
+    },
+    setSortAttribute: function(inputAttribute) {
+      if (this.sortOrder === 1) {
+        this.sortOrder = -1;
+      } else {
+        this.sortOrder = 1;
+      }
+      this.sortAttribute = inputAttribute;
+    },
     createProduct: function() {
       console.log("createProduct");
       this.errors = [];
